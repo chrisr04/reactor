@@ -105,10 +105,11 @@ await counterBloc.close();
 ### Bloc Widgets
 This package provides some widgets that make interacting with BLoC easier.
 
-#### BlocInjector
+### BlocInjector
 Provides a convenient way to inject and manage `Bloc` instances in the widget tree. It also ensures the `Bloc` is properly disposed of when no longer needed.
 
 **Basic usage**
+
 ```dart
 BlocInjector<MyBloc>(
   bloc: MyBloc(),
@@ -119,6 +120,7 @@ BlocInjector.of<MyBloc>(context); // Get injected instance
 ```
 
 **Advanced usage**
+
 If you don't need an automatic Bloc disposing when the widget is disposed set `closeOnDispose` to `false`.
 
 ```dart
@@ -132,10 +134,11 @@ await BlocInjector.of<MyBloc>(context).close();
 ```
 **Note:** Don't forget to call `close()` when the Bloc is no longer needed.
 
-#### BlocBuilder
+### BlocBuilder
 The `BlocBuilder` widget listens to the state changes of a `Bloc` and rebuilds its widget tree using the provided `builder` function whenever a new state is emitted. The rebuilds can be filtered by the optional `buildWhen` function. This is useful for creating reactive UIs where the UI depends on the state of a `Bloc`.
 
 **Basic usage**
+
 This rebuilds the widget on every state emitted.
 
 ```dart
@@ -148,6 +151,7 @@ BlocBuilder<CounterBloc, CounterState>(
 
 
 **Advanced usage**
+
 This rebuilds the widget only when `IncrementState` is emitted.
 
 ```dart
@@ -159,10 +163,11 @@ BlocBuilder<CounterBloc, CounterState>(
 );
 ```
 
-#### BlocObserver
+### BlocObserver
  A widget that observes to state changes in a `Bloc` and invokes a `observer` callback whenever the Bloc's state changes. The `BlocObserver` widget should be used for any code which needs to execute in response to a state change, such as navigation, showing a `SnackBar`, showing a `Dialog`, etc.
  
 **Basic usage**
+
 This call the listener on every state emitted.
 
 ```dart
@@ -179,6 +184,7 @@ BlocObserver<CounterBloc, CounterState>(
 ```
 
 **Advanced usage**
+
 This call the `observer` callback only when `IncrementState` is emitted.
 
 ```dart
@@ -195,10 +201,11 @@ BlocObserver<CounterBloc, CounterState>(
 );
 ```
 
-#### BlocReactor
+### BlocReactor
 A widget that combines a `BlocObserver` and a `BlocBuilder` to simplify state management and UI rebuilding based on `Bloc` state changes.
 
 **Basic usage**
+
 This rebuilds the widget and call the `observer` callback on every state emitted.
 
 ```dart
@@ -219,6 +226,7 @@ BlocReactor<CounterBloc, CounterState>(
 ```
 
 **Advanced usage**
+
 This call the `observer` callback only when `DecrementState` is emitted and rebuilds the widget only when `IncrementState` is emitted.
 
 ```dart
@@ -240,10 +248,11 @@ BlocReactor<CounterBloc, CounterState>(
 );
 ```
 
-#### MultiBlocInjector
+### MultiBlocInjector
 A `MultiBlocInjector` is a widget that merges multiple `BlocInjector` injectors into a single widget tree. This is particularly useful for injecting multiple Blocs into the widget tree at a higher level, thereby making them available throughout the subtree.
 
 **Basic usage**
+
 ```dart
 MultiBlocInjector(
   injectors: [
@@ -258,10 +267,11 @@ MultiBlocInjector(
 );
 ```
 
-#### MultiBlocObserver
+### MultiBlocObserver
 `MultiBlocObserver` is a convenience widget that allows you to listen to multiple Blocs in a single location. It is commonly used in scenarios where you need to react to changes from multiple Blocs and perform actions such as navigation, showing dialogs, or updating the UI.
 
 **Basic usage**
+
 ```dart
 MultiBlocObserver(
   observers: [
