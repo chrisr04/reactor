@@ -17,7 +17,7 @@ Add the following to your `pubspec.yaml` file:
 dependencies:
   reactor:
     git:
-      url: <repository_url>
+      url: https://github.com/chrisr04/reactor
       ref: v0.0.1
  ```
 
