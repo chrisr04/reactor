@@ -18,7 +18,7 @@ dependencies:
   reactor:
     git:
       url: https://github.com/chrisr04/reactor
-      ref: v0.0.1
+      ref: v0.0.2
  ```
 
 ## Usage
