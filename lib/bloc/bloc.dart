@@ -2,6 +2,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:reactor/types/types.dart';
 
+part 'emitter.dart';
+part 'event_handler.dart';
+
 /// An abstract class representing a Bloc that handles events of type `E` and manages states of type `S`.
 ///
 ///
@@ -30,7 +33,8 @@ abstract class Bloc<E, S> {
   final _states = StreamController<S>.broadcast();
   late StreamSubscription<E> _eventsSubscription;
   late StreamSubscription<S> _statesSubscription;
-  final _eventHandlers = <Type, Function>{};
+  final _eventHandlers = <Type, EventHandler<E, S>>{};
+  final _emitters = <Type, Emitter<S>>{};
   late S _currentState;
   late S _previousState;
   bool _isClosed = false;
@@ -58,8 +62,9 @@ abstract class Bloc<E, S> {
   /// Registers an `eventHandler` for specified Event.
   @protected
   @mustCallSuper
-  void register<T extends E>(EventHandler<T, S> eventHandler) {
-    _eventHandlers[T] = eventHandler;
+  void register<T extends E>(EventHandlerCallback<T, S> handle) {
+    _eventHandlers[T] = EventHandler<T, S>(handle: handle);
+    _emitters[T] = Emitter<S>(emit: _states.add);
   }
 
   /// Maps the given `event` to a state using the registered event handlers.
@@ -67,7 +72,10 @@ abstract class Bloc<E, S> {
   @mustCallSuper
   void onMapEventToState(E event) async {
     final eventHandler = _eventHandlers[event.runtimeType];
-    if (eventHandler != null) await eventHandler(event, _states.add);
+    final emitter = _emitters[event.runtimeType];
+    if (eventHandler != null && emitter != null) {
+      await eventHandler(event, emitter);
+    }
   }
 
   /// Adds an `event` to the `Bloc` for processing.
@@ -103,6 +111,7 @@ abstract class Bloc<E, S> {
     await _events.close();
     await _states.close();
     _eventHandlers.clear();
+    _emitters.clear();
     _isClosed = true;
   }
 }

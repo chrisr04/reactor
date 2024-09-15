@@ -1,11 +1,15 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:reactor/bloc/bloc.dart';
 
 /// A function that emits a state of type [S].
-typedef Emitter<S> = void Function(S state);
+typedef EmitterCallback<S> = void Function(S state);
 
 /// A function that handles an event of type [E] and emits a state of type [S].
-typedef EventHandler<E, S> = FutureOr<void> Function(E event, Emitter<S> emit);
+typedef EventHandlerCallback<E, S> = FutureOr<void> Function(
+  E event,
+  Emitter<S> emit,
+);
 
 /// A function that observes to state changes of type [S].
 typedef BlocObserverHandler<S> = void Function(BuildContext context, S state);

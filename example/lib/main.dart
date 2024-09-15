@@ -52,14 +52,14 @@ class CounterPage extends StatelessWidget {
           FloatingActionButton(
             child: const Icon(Icons.add),
             onPressed: () {
-              BlocInjector.of<CounterBloc>(context).add(IncrementEvent());
+              context.get<CounterBloc>().add(IncrementEvent());
             },
           ),
           const SizedBox(height: 16.0),
           FloatingActionButton(
             child: const Icon(Icons.remove),
             onPressed: () {
-              BlocInjector.of<CounterBloc>(context).add(DecrementEvent());
+              context.get<CounterBloc>().add(DecrementEvent());
             },
           ),
         ],

@@ -84,7 +84,7 @@ counterBloc.add(IncrementEvent());
 ```
 
 ### Listening to State Changes
-Listen to the state stream to react to state changes.
+Listen to the state stream and react to state changes.
 
 ```dart
 final subscription = counterBloc.stream.listen((state) {
@@ -115,8 +115,18 @@ BlocInjector<MyBloc>(
   bloc: MyBloc(),
   child: MyChildWidget(),
 );
+```
 
-BlocInjector.of<MyBloc>(context); // Get injected instance
+To get injected instance you can use:
+
+```dart
+BlocInjector.of<MyBloc>(context);
+```
+
+or
+
+```dart
+context.get<MyBloc>();
 ```
 
 **Advanced usage**
