@@ -1,9 +1,10 @@
 part of 'bloc.dart';
 
-/// `Emitter<S>` is a simple utility class that allows for emitting
-/// new states in the Bloc, commonly used in state management scenarios.
+/// A class representing a state emitter.
 final class Emitter<S> {
-  Emitter({required this.emit});
+  /// `Emitter<S>` is a simple utility class that allows for emitting
+  /// new states in the Bloc, commonly used in state management scenarios.
+  Emitter(this.emit);
 
   final EmitterCallback<S> emit;
 

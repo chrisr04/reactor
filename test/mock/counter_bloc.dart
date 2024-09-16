@@ -2,14 +2,23 @@ import 'package:reactor/reactor.dart';
 
 // Bloc
 class CounterBloc extends Bloc<CounterEvent, CounterState> {
-  CounterBloc([int? initialValue]) : super(InitialState(initialValue ?? 0)) {
-    register<IncrementEvent>((event, emit) {
-      emit(IncrementState(state.counter + 1));
-    });
+  CounterBloc({
+    int? initialValue,
+    bool badRegister = false,
+  }) : super(InitialState(initialValue ?? 0)) {
+    register<IncrementEvent>(_onIncrementEvent);
+    register<DecrementEvent>(_onDecrementEvent);
+    if (badRegister) {
+      register<DecrementEvent>(_onDecrementEvent);
+    }
+  }
 
-    register<DecrementEvent>((event, emit) {
-      emit(DecrementState(state.counter - 1));
-    });
+  void _onIncrementEvent(IncrementEvent event, Emitter<CounterState> emit) {
+    emit(IncrementState(state.counter + 1));
+  }
+
+  void _onDecrementEvent(DecrementEvent event, Emitter<CounterState> emit) {
+    emit(DecrementState(state.counter - 1));
   }
 }
 

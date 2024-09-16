@@ -31,10 +31,10 @@ abstract class Bloc<E, S> {
 
   final _events = StreamController<E>();
   final _states = StreamController<S>.broadcast();
-  late StreamSubscription<E> _eventsSubscription;
-  late StreamSubscription<S> _statesSubscription;
   final _eventHandlers = <Type, EventHandler<E, S>>{};
   final _emitters = <Type, Emitter<S>>{};
+  late StreamSubscription<E> _eventsSubscription;
+  late StreamSubscription<S> _statesSubscription;
   late S _currentState;
   late S _previousState;
   bool _isClosed = false;
@@ -63,8 +63,15 @@ abstract class Bloc<E, S> {
   @protected
   @mustCallSuper
   void register<T extends E>(EventHandlerCallback<T, S> handle) {
-    _eventHandlers[T] = EventHandler<T, S>(handle: handle);
-    _emitters[T] = Emitter<S>(emit: _states.add);
+    if (_eventHandlers.containsKey(T) && _emitters.containsKey(T)) {
+      throw StateError(
+        'The event $T has already been registered. '
+        'Please check that register<$T>((event, emit){...}) is called only once.',
+      );
+    }
+
+    _eventHandlers[T] = EventHandler<T, S>(handle);
+    _emitters[T] = Emitter<S>(_states.add);
   }
 
   /// Maps the given `event` to a state using the registered event handlers.

@@ -151,7 +151,7 @@ void main() {
                             child: const Text('change instance'),
                             onPressed: () {
                               setState(() {
-                                bloc = CounterBloc(1);
+                                bloc = CounterBloc(initialValue: 1);
                               });
                             },
                           )

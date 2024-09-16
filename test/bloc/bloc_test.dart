@@ -9,14 +9,28 @@ void main() {
     myBloc = CounterBloc();
   });
 
+  tearDown(() {
+    myBloc.close();
+  });
+
   test(
-    'MyBloc should emit an [NewTestState] when the [InitialTestEvent] is added',
+    'MyBloc should emit a [NewTestState] when the [InitialTestEvent] is added',
     () async {
       myBloc.add(IncrementEvent());
 
       await expectLater(myBloc.stream, emits(isA<IncrementState>()));
       expect(myBloc.state, isA<IncrementState>());
       expect(myBloc.previousState, isA<InitialState>());
+    },
+  );
+
+  test(
+    'MyBloc should throw a StateError when register an event more than once',
+    () {
+      expect(
+        () => CounterBloc(badRegister: true),
+        throwsA(isStateError),
+      );
     },
   );
 
@@ -31,7 +45,7 @@ void main() {
 
   test(
     'MyBloc.add should throw a StateError when add an unregistered [UnregisteredTestEvent] ',
-    () async {
+    () {
       expect(
         () => myBloc.add(UnregisteredEvent()),
         throwsA(isStateError),

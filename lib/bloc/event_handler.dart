@@ -1,10 +1,11 @@
 part of 'bloc.dart';
 
-/// `EventHandler<E, S>` is a utility class designed to handle events and emit states
-/// in a structured manner. It serves as a wrapper around an `EventHandlerCallback`
-/// to facilitate the processing of events in the Bloc.
+/// A class representing an event handler.
 final class EventHandler<E, S> {
-  EventHandler({required this.handle});
+  /// `EventHandler<E, S>` is a simple utility class designed to handle events and emit states
+  /// in a structured manner. It serves as a wrapper around an `EventHandlerCallback`
+  /// to facilitate the processing of events in the Bloc.
+  EventHandler(this.handle);
 
   final EventHandlerCallback<E, S> handle;
 
