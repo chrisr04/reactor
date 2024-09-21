@@ -53,7 +53,7 @@ class _BlocBuilderState<B extends Bloc, S> extends State<BlocBuilder<B, S>> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() => _subscribe());
+    Future.microtask(_subscribe);
   }
 
   @override

@@ -71,7 +71,7 @@ class _BlocObserverState<B extends Bloc, S>
   @override
   void initState() {
     super.initState();
-    Future.microtask(() => _subscribe());
+    Future.microtask(_subscribe);
   }
 
   @override
