@@ -118,11 +118,13 @@ class MyCounterWidget extends ReactorWidget<CounterBloc, CounterState> {
 
   @override
   CounterBloc? blocDependency(BuildContext context) {
+    // Add your Bloc instance
     return CounterBloc(initialValue);
   } 
 
   @override
   void init(CounterBloc bloc) {
+    // Add your initial events
     bloc.add(IncrementEvent());
   }
 
