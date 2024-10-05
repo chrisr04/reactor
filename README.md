@@ -151,7 +151,7 @@ class MyCounterWidget extends ReactorWidget<CounterBloc, CounterState> {
 }
 ```
 
-**Note:** It's not necessary that the `blocDependency` method be overriden every time, we recommend adding it to the highest widget in our view if we want to consume the Bloc in other widgets.
+**Note:** It's not necessary override the `blocDependency` every time, we recommend adding it to the highest widget in our view if we want to consume the Bloc in other widgets.
 
 **Advanced usage**
 
