@@ -6,45 +6,43 @@ void main() {
   runApp(const MainApp());
 }
 
-class MainApp extends StatefulWidget {
+class MainApp extends StatelessWidget {
   const MainApp({super.key});
 
   @override
-  State<MainApp> createState() => _MainAppState();
-}
-
-class _MainAppState extends State<MainApp> {
-  final counterBloc = CounterBloc();
-
-  @override
   Widget build(BuildContext context) {
-    return BlocInjector<CounterBloc>(
-      bloc: counterBloc,
-      child: const MaterialApp(
-        home: CounterPage(),
+    return const MaterialApp(
+      home: CounterPage(
+        initialValue: 0,
       ),
     );
   }
 }
 
-class CounterPage extends StatelessWidget {
-  const CounterPage({super.key});
+class CounterPage extends ReactorWidget<CounterBloc, CounterState> {
+  const CounterPage({
+    super.key,
+    required this.initialValue,
+  });
+
+  final int initialValue;
 
   @override
-  Widget build(BuildContext context) {
+  CounterBloc? blocDependency(BuildContext context) {
+    return CounterBloc(initialValue);
+  }
+
+  @override
+  Widget build(BuildContext context, CounterState state) {
     return Scaffold(
-      body: BlocBuilder<CounterBloc, CounterState>(
-        builder: (context, state) {
-          return Center(
-            child: Text(
-              '${state.counter}',
-              style: const TextStyle(
-                fontSize: 22.0,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          );
-        },
+      body: Center(
+        child: Text(
+          '${state.counter}',
+          style: const TextStyle(
+            fontSize: 22.0,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
       ),
       floatingActionButton: Column(
         mainAxisSize: MainAxisSize.min,
@@ -52,14 +50,16 @@ class CounterPage extends StatelessWidget {
           FloatingActionButton(
             child: const Icon(Icons.add),
             onPressed: () {
-              context.get<CounterBloc>().add(IncrementEvent());
+              final bloc = getBloc(context);
+              bloc.add(IncrementEvent());
             },
           ),
           const SizedBox(height: 16.0),
           FloatingActionButton(
             child: const Icon(Icons.remove),
             onPressed: () {
-              context.get<CounterBloc>().add(DecrementEvent());
+              final bloc = getBloc(context);
+              bloc.add(DecrementEvent());
             },
           ),
         ],

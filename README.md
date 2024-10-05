@@ -18,7 +18,7 @@ dependencies:
   reactor:
     git:
       url: https://github.com/chrisr04/reactor
-      ref: v0.0.3
+      ref: v0.0.4
  ```
 
 ## Usage
@@ -103,7 +103,111 @@ await counterBloc.close();
 ```
 
 ### Bloc Widgets
-This package provides some widgets that make interacting with BLoC easier.
+This package provides some widgets that make interacting with Bloc easier.
+
+### ReactorWidget
+An abstract class that simplifies the creation of a Widget which reacts to changes in a Bloc state. The `ReactorWidget` class is designed to help manage state and UI updates efficiently in applications using the Bloc pattern.
+
+By extending ReactorWidget, developers can focus on handling state changes while relying on built-in hooks for initialization, observing state transitions, and controlling when the widget should rebuild. This abstraction reduces boilerplate code and streamlines the development process.
+
+**Basic usage**
+
+```dart
+class MyCounterWidget extends ReactorWidget<CounterBloc, CounterState> {
+  MyCounterWidget({super.key});
+
+  @override
+  CounterBloc? blocDependency(BuildContext context) {
+    return CounterBloc(initialValue);
+  } 
+
+  @override
+  void init(CounterBloc bloc) {
+    bloc.add(IncrementEvent());
+  }
+
+  @override
+  Widget build(BuildContext context, MyState state) {
+    return Column(
+      childern: [
+        Text('Counter: ${state.value}'),
+        MaterialButton(
+          child: const Icon(Icons.add),
+          onPressed: () {
+            final bloc = getBloc(context);
+            bloc.add(IncrementEvent());
+          },
+        ),
+        MaterialButton(
+          child: const Icon(Icons.add),
+          onPressed: () {
+            final bloc = getBloc(context);
+            bloc.add(DecrementEvent());
+          },
+        ),
+      ]
+    );
+  }
+}
+```
+
+**Note:** It's not necessary that the `blocDependency` method be overriden every time, we recommend adding it to the highest widget in our view if we want to consume the Bloc in other widgets.
+
+**Advanced usage**
+
+```dart
+class MyCounterWidget extends ReactorWidget<CounterBloc, CounterState> {
+  MyCounterWidget({super.key});
+
+  @override
+  CounterBloc? blocDependency(BuildContext context) {
+    return CounterBloc(initialValue);
+  } 
+
+  @override
+  bool observeWhen(CounterState previous, CounterState current) {
+    // Observer function will be called when the value is equal to 100
+    return current.value == 100;
+  }
+
+  @override
+  void observer(BuildContext context, CounterState state) {
+    // Perform side effects, like logging or navigation
+    Navigator.of(context).pushNamed('/secondPage');
+  }
+
+  @override
+  bool buildWhen(CounterState previous, CounterState current) {
+    // Only rebuild when the value is greather than 5
+    return current.value > 5;
+  }
+
+  @override
+  Widget build(BuildContext context, MyState state) {
+    return Column(
+      childern: [
+        Text('Counter: ${state.value}'),
+        MaterialButton(
+          child: const Icon(Icons.add),
+          onPressed: () {
+            final bloc = getBloc(context);
+            bloc.add(IncrementEvent());
+          },
+        ),
+        MaterialButton(
+          child: const Icon(Icons.add),
+          onPressed: () {
+            final bloc = getBloc(context);
+            bloc.add(DecrementEvent());
+          },
+        ),
+      ]
+    );
+  }
+}
+```
+
+**Note:** If you don't want the widget to be rebuilt you can override the `observeOnly` getter.
 
 ### BlocInjector
 Provides a convenient way to inject and manage `Bloc` instances in the widget tree. It also ensures the `Bloc` is properly disposed of when no longer needed.

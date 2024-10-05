@@ -94,8 +94,9 @@ void main() {
               child: Scaffold(
                 body: Center(
                   child: BlocObserver<CounterBloc, CounterState>(
-                    observeWhen: (previous, current) =>
-                        current is DecrementState,
+                    observeWhen: (previous, current) {
+                      return current is DecrementState;
+                    },
                     observer: (context, state) {
                       counter = state.counter;
                     },
@@ -123,7 +124,7 @@ void main() {
             builder: (BuildContext context, setState) {
               return MaterialApp(
                 home: BlocInjector<CounterBloc>(
-                  bloc: bloc..add(IncrementEvent()),
+                  bloc: bloc..add(const IncrementEvent()),
                   child: Scaffold(
                     body: Center(
                       child: Column(

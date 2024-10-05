@@ -1,8 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:reactor/bloc/bloc.dart';
-import 'package:reactor/types/types.dart';
-import 'package:reactor/widgets/bloc_builder.dart';
-import 'package:reactor/widgets/bloc_observer.dart';
+import 'package:reactor/widgets/bloc_widget.dart';
 
 /// Creates a `BlocReactor` widget.
 ///
@@ -14,7 +11,8 @@ import 'package:reactor/widgets/bloc_observer.dart';
 /// - [builder]: A function that builds a widget based on the `Bloc`'s state.
 /// - [buildWhen]: An optional callback that can control whether the builder
 ///   function should be invoked based on the previous and current states.
-class BlocReactor<B extends Bloc, S> extends StatelessWidget {
+/// - [observeOnly]: An optional property that if it's true it will behave like a `BlocObserver`.
+class BlocReactor<B extends Bloc, S> extends BlocWidget<B, S> {
   /// A `BlocReactor` is a Flutter widget that combines a `BlocObserver` and a
   /// `BlocBuilder`. It allows you to define both a observer and a builder in one
   /// widget, ensuring that the observer and builder are consistently defined for
@@ -48,43 +46,10 @@ class BlocReactor<B extends Bloc, S> extends StatelessWidget {
   /// ```
   const BlocReactor({
     super.key,
-    this.observeWhen,
-    required this.observer,
-    this.buildWhen,
-    required this.builder,
+    super.observeWhen,
+    required super.observer,
+    super.buildWhen,
+    required super.builder,
+    super.observeOnly,
   });
-
-  /// An optional function that can be used to determine whether the `observer`
-  /// should be invoked.
-  ///
-  /// If `observeWhen` returns true, the `observer` will be called with the
-  /// `previous` and `current` state.
-  final BlocCondition<S>? observeWhen;
-
-  /// The function that gets called whenever the `Bloc`'s state changes and
-  /// `observeWhen` returns true.
-  final BlocObserverHandler<S> observer;
-
-  /// An optional function that can be used to determine whether the `builder`
-  /// should be invoked.
-  ///
-  /// If `buildWhen` returns true, the `builder` will be called with the
-  /// `previous` and `current` state.
-  final BlocCondition<S>? buildWhen;
-
-  /// The function that builds a widget whenever the `Bloc`'s state changes and
-  /// `buildWhen` returns true.
-  final BlocBuilderHandler<S> builder;
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocObserver<B, S>(
-      observer: observer,
-      observeWhen: observeWhen,
-      child: BlocBuilder<B, S>(
-        buildWhen: buildWhen,
-        builder: builder,
-      ),
-    );
-  }
 }

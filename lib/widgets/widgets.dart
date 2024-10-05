@@ -4,3 +4,5 @@ export 'bloc_reactor.dart';
 export 'bloc_observer.dart';
 export 'multi_bloc_injector.dart';
 export 'multi_bloc_observer.dart';
+export 'reactor_widget.dart';
+export 'bloc_widget.dart';

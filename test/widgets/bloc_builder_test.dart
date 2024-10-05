@@ -93,7 +93,7 @@ void main() {
       expect(counterText, findsOneWidget);
     });
 
-    testWidgets('build when listenWhen condition is true', (tester) async {
+    testWidgets('build when buildWhen condition is true', (tester) async {
       whenEmit(
         counterBloc,
         initialState: const InitialState(0),

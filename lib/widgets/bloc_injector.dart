@@ -7,17 +7,17 @@ import 'package:reactor/nested/nested.dart';
 /// The `bloc` parameter must not be null.
 /// The `closeOnDispose` parameter defaults to true.
 class BlocInjector<B extends Bloc> extends SingleChildStatefulWidget {
-  /// A widget that injects a [Bloc] into the widget tree.
+  /// A widget that injects a Bloc into the widget tree.
   ///
-  /// The `BlocInjector` widget is used to provide a [Bloc] to its descendant widgets.
-  /// It ensures that the [Bloc] is properly disposed of when the widget is removed
+  /// The `BlocInjector` widget is used to provide a Bloc to its descendant widgets.
+  /// It ensures that the Bloc is properly disposed of when the widget is removed
   /// from the widget tree.
   ///
   /// The `child` parameter is optional.
   ///
-  /// The `bloc` parameter is required and represents the [Bloc] to be provided to the
-  /// widget tree. The [closeOnDispose] parameter is optional and defaults to true,
-  /// indicating whether the [Bloc] should be closed when the widget is disposed.
+  /// The `bloc` parameter is required and represents the Bloc to be provided to the
+  /// widget tree. The `closeOnDispose` parameter is optional and defaults to true,
+  /// indicating whether the Bloc should be closed when the widget is disposed.
   ///
   /// ```dart
   /// BlocInjector<MyBloc>(
@@ -59,18 +59,19 @@ class BlocInjector<B extends Bloc> extends SingleChildStatefulWidget {
 /// is closed when the widget is disposed if [closeOnDispose] is true.
 class _BlocInjectorState<B extends Bloc>
     extends SingleChildState<BlocInjector> {
+
+  @override
+  void didUpdateWidget(covariant BlocInjector<Bloc> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.bloc != widget.bloc) oldWidget.bloc.close();
+  }
+
   @override
   Widget buildWithChild(BuildContext context, Widget? child) {
     return _InheritedBloc<B>(
       bloc: widget.bloc as B,
       child: child ?? const SizedBox.shrink(),
     );
-  }
-
-  @override
-  void didUpdateWidget(covariant BlocInjector<Bloc> oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.bloc != widget.bloc) oldWidget.bloc.close();
   }
 
   @override
@@ -103,7 +104,7 @@ class _InheritedBloc<B extends Bloc> extends InheritedWidget {
   /// If [listen] is true, the context will rebuild if the [Bloc] changes.
   static B of<B extends Bloc>(BuildContext context, bool listen) => listen
       ? context.dependOnInheritedWidgetOfExactType<_InheritedBloc<B>>()!.bloc
-      : context.findAncestorWidgetOfExactType<_InheritedBloc<B>>()!.bloc;
+      : context.getInheritedWidgetOfExactType<_InheritedBloc<B>>()!.bloc;
 
   @override
   bool updateShouldNotify(_InheritedBloc<B> oldWidget) =>

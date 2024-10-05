@@ -23,13 +23,21 @@ class CounterBloc extends Bloc<CounterEvent, CounterState> {
 }
 
 // Events
-sealed class CounterEvent {}
+sealed class CounterEvent {
+  const CounterEvent();
+}
 
-final class IncrementEvent extends CounterEvent {}
+final class IncrementEvent extends CounterEvent {
+  const IncrementEvent();
+}
 
-final class DecrementEvent extends CounterEvent {}
+final class DecrementEvent extends CounterEvent {
+  const DecrementEvent();
+}
 
-final class UnregisteredEvent extends CounterEvent {}
+final class UnregisteredEvent extends CounterEvent {
+  const UnregisteredEvent();
+}
 
 // States
 sealed class CounterState {

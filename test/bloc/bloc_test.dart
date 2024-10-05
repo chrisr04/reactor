@@ -16,7 +16,7 @@ void main() {
   test(
     'MyBloc should emit a [NewTestState] when the [InitialTestEvent] is added',
     () async {
-      myBloc.add(IncrementEvent());
+      myBloc.add(const IncrementEvent());
 
       await expectLater(myBloc.stream, emits(isA<IncrementState>()));
       expect(myBloc.state, isA<IncrementState>());
@@ -47,7 +47,7 @@ void main() {
     'MyBloc.add should throw a StateError when add an unregistered [UnregisteredTestEvent] ',
     () {
       expect(
-        () => myBloc.add(UnregisteredEvent()),
+        () => myBloc.add(const UnregisteredEvent()),
         throwsA(isStateError),
       );
     },
@@ -60,7 +60,7 @@ void main() {
 
       expect(myBloc.isClosed, isTrue);
       expect(
-        () => myBloc.add(DecrementEvent()),
+        () => myBloc.add(const DecrementEvent()),
         throwsA(isStateError),
       );
     },
