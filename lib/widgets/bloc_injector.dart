@@ -160,9 +160,22 @@ class _InheritedBloc<B extends Bloc> extends InheritedWidget {
     BuildContext context, {
     bool listen = false,
   }) {
-    return listen
-        ? context.dependOnInheritedWidgetOfExactType<_InheritedBloc<B>>()!.bloc
-        : context.getInheritedWidgetOfExactType<_InheritedBloc<B>>()!.bloc;
+    final bloc = listen
+        ? context.dependOnInheritedWidgetOfExactType<_InheritedBloc<B>>()?.bloc
+        : context.getInheritedWidgetOfExactType<_InheritedBloc<B>>()?.bloc;
+
+    if (bloc == null) {
+      throw FlutterError(
+        'The $B is not registered in the widget tree.\n'
+        'Please inject an instance of $B via:\n\n'
+        'BlocInjector<$B>(\n'
+        ' create: (context) => $B(...),\n'
+        ' child: MyChildWidget(),\n'
+        ')\n',
+      );
+    }
+
+    return bloc;
   }
 
   @override

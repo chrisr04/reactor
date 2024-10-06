@@ -35,7 +35,7 @@ abstract class ReactorWidget<B extends Bloc, S> extends StatefulWidget {
   /// removed from the widget tree. By default, this is set to true.
   ///
   /// Override this method to prevent closing the Bloc on dispose.
-  bool get closeOnDispose => true;
+  bool get closeOnDispose => true; 
 
   /// Whether this widget should only observe the Bloc's state without
   /// rebuilding the UI.

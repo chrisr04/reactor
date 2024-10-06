@@ -35,7 +35,7 @@ void main() {
   });
 
   group('BlocObserver', () {
-    testWidgets('observe when state is changed the counter is 1',
+    testWidgets('observe when state is changed then the counter is 1',
         (tester) async {
       int counter = 0;
 

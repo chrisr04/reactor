@@ -30,7 +30,7 @@ void main() {
   });
 
   group('BlocBuilder', () {
-    testWidgets('build when widget is initializated the counter is 0',
+    testWidgets('build when widget is initializated then the counter is 0',
         (tester) async {
       whenEmit(
         counterBloc,
@@ -60,7 +60,8 @@ void main() {
       expect(counterText, findsOneWidget);
     });
 
-    testWidgets('build when state is changed the counter is 1', (tester) async {
+    testWidgets('build when state is changed then the counter is 1',
+        (tester) async {
       whenEmit(
         counterBloc,
         initialState: const InitialState(0),

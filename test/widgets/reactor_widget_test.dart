@@ -10,9 +10,11 @@ import '../utils/when_emit.dart';
 class MockCounterBloc extends MockBloc<CounterEvent, CounterState>
     implements CounterBloc {}
 
-class CounterTextWithoutInjection
+class MockBuildContext extends Mock implements BuildContext {}
+
+class CounterTextWithoutOverrides
     extends ReactorWidget<CounterBloc, CounterState> {
-  const CounterTextWithoutInjection({super.key});
+  const CounterTextWithoutOverrides({super.key});
 
   @override
   Widget build(BuildContext context, CounterState state) {
@@ -38,6 +40,7 @@ class CounterText extends ReactorWidget<CounterBloc, CounterState> {
     this.mockedBuildWhen,
     this.mockedObserveWhen,
     this.mockedObserveOnly = false,
+    this.mockedCloseOnDispose = true,
     this.mockedObserver,
   });
 
@@ -45,7 +48,11 @@ class CounterText extends ReactorWidget<CounterBloc, CounterState> {
   final BlocCondition? mockedBuildWhen;
   final BlocCondition? mockedObserveWhen;
   final bool mockedObserveOnly;
+  final bool mockedCloseOnDispose;
   final BlocObserverHandler<CounterState>? mockedObserver;
+
+  @override
+  bool get closeOnDispose => mockedCloseOnDispose;
 
   @override
   bool get observeOnly => mockedObserveOnly;
@@ -84,7 +91,85 @@ void main() {
   });
 
   group('ReactorWidget', () {
-    testWidgets('build when widget is initializated the counter is 0',
+
+    test(
+      'should load getters with default values correctly',
+      () {
+        const widget = CounterTextWithoutOverrides();
+
+        expect(widget.closeOnDispose, isTrue);
+        expect(widget.observeOnly, isFalse);
+      },
+    );
+
+    test(
+      'should throws a FlutterError if bloc is not found',
+      () {
+        const widget = CounterTextWithoutOverrides();
+
+        expect(
+          () => widget.initBloc(MockBuildContext()),
+          throwsA(isFlutterError),
+        );
+      },
+    );
+
+    testWidgets(
+      'build when state is changed and injection is explicit',
+      (tester) async {
+        whenEmit(
+          counterBloc,
+          initialState: const InitialState(0),
+          states: [
+            const IncrementState(1),
+          ],
+        );
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: BlocInjector<CounterBloc>(
+              create: (context) => counterBloc,
+              child: const CounterTextWithoutOverrides(),
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        final counterText = find.text('Counter: 1');
+
+        expect(counterText, findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'add IncrementEvent when button is tapped and injection is explicit',
+      (tester) async {
+        whenEmit<CounterEvent, CounterState>(
+          counterBloc,
+          initialState: const InitialState(0),
+          states: [],
+        );
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: BlocInjector<CounterBloc>(
+              create: (context) => counterBloc,
+              child: const CounterTextWithoutOverrides(),
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byType(MaterialButton));
+        await tester.pump();
+
+        verify(() => counterBloc.add(const IncrementEvent())).called(1);
+      },
+    );
+
+    testWidgets('build when widget is initializated then the counter is 0',
         (tester) async {
       whenEmit(
         counterBloc,
@@ -105,7 +190,32 @@ void main() {
       expect(counterText, findsOneWidget);
     });
 
-    testWidgets('build when state is changed the counter is 1', (tester) async {
+    testWidgets(
+      'build when widget is initializated with counter in 0 and closeOnDispose is false',
+      (tester) async {
+        whenEmit(
+          counterBloc,
+          states: <CounterState>[],
+          initialState: const InitialState(0),
+        );
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: CounterText(
+              mockedBloc: counterBloc,
+              mockedCloseOnDispose: false,
+            ),
+          ),
+        );
+
+        final counterText = find.text('Counter: 0');
+
+        expect(counterText, findsOneWidget);
+      },
+    );
+
+    testWidgets('build when state is changed then the counter is 1',
+        (tester) async {
       whenEmit(
         counterBloc,
         initialState: const InitialState(0),
@@ -158,7 +268,7 @@ void main() {
       expect(counterText, findsOneWidget);
     });
 
-    testWidgets('observe when state is changed the counter is 1',
+    testWidgets('observe when state is changed then the counter is 1',
         (tester) async {
       int counter = 0;
 
@@ -224,7 +334,7 @@ void main() {
     );
 
     testWidgets(
-      'prevent build when observeOnly is true and state is changed the counter is 1',
+      'prevent build when observeOnly is true and state is changed then the counter is 1',
       (tester) async {
         whenEmit(
           counterBloc,
@@ -248,61 +358,6 @@ void main() {
         final counterText = find.text('Counter: 1');
 
         expect(counterText, findsNothing);
-      },
-    );
-
-    testWidgets(
-      'build when state is changed the counter is 1 and injection is explicit',
-      (tester) async {
-        whenEmit(
-          counterBloc,
-          initialState: const InitialState(0),
-          states: [
-            const IncrementState(1),
-          ],
-        );
-
-        await tester.pumpWidget(
-          MaterialApp(
-            home: BlocInjector<CounterBloc>(
-              create: (context) => counterBloc,
-              child: const CounterTextWithoutInjection(),
-            ),
-          ),
-        );
-
-        await tester.pumpAndSettle();
-
-        final counterText = find.text('Counter: 1');
-
-        expect(counterText, findsOneWidget);
-      },
-    );
-
-    testWidgets(
-      'add IncrementEvent when button is tapped and injection is explicit',
-      (tester) async {
-        whenEmit<CounterEvent, CounterState>(
-          counterBloc,
-          initialState: const InitialState(0),
-          states: [],
-        );
-
-        await tester.pumpWidget(
-          MaterialApp(
-            home: BlocInjector<CounterBloc>(
-              create: (context) => counterBloc,
-              child: const CounterTextWithoutInjection(),
-            ),
-          ),
-        );
-
-        await tester.pumpAndSettle();
-
-        await tester.tap(find.byType(MaterialButton));
-        await tester.pump();
-
-        verify(() => counterBloc.add(const IncrementEvent())).called(1);
       },
     );
   });
