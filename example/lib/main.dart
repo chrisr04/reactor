@@ -28,7 +28,7 @@ class CounterPage extends ReactorWidget<CounterBloc, CounterState> {
   final int initialValue;
 
   @override
-  CounterBloc? blocDependency(BuildContext context) {
+  CounterBloc initBloc(BuildContext context) {
     return CounterBloc(initialValue);
   }
 

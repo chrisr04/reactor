@@ -32,7 +32,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: BlocInjector<CounterBloc>(
-            bloc: counterBloc,
+            create: (context) => counterBloc,
             child: Scaffold(
               body: Center(
                 child: BlocReactor<CounterBloc, CounterState>(

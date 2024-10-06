@@ -41,7 +41,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: BlocInjector<CounterBloc>(
-            bloc: counterBloc,
+            create: (context) => counterBloc,
             child: Scaffold(
               body: Center(
                 child: BlocBuilder<CounterBloc, CounterState>(
@@ -72,7 +72,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: BlocInjector<CounterBloc>(
-            bloc: counterBloc,
+            create: (context) => counterBloc,
             child: Scaffold(
               body: Center(
                 child: BlocBuilder<CounterBloc, CounterState>(
@@ -109,7 +109,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: BlocInjector<CounterBloc>(
-            bloc: counterBloc,
+            create: (context) => counterBloc,
             child: Scaffold(
               body: Center(
                 child: BlocBuilder<CounterBloc, CounterState>(
@@ -140,8 +140,8 @@ void main() {
           StatefulBuilder(
             builder: (BuildContext context, setState) {
               return MaterialApp(
-                home: BlocInjector<CounterBloc>(
-                  bloc: bloc,
+                home: BlocInjector<CounterBloc>.instance(
+                  instance: bloc,
                   child: Scaffold(
                     body: Center(
                       child: Column(

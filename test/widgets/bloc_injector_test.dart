@@ -34,8 +34,8 @@ void main() {
           StatefulBuilder(
             builder: (BuildContext context, setState) {
               return MaterialApp(
-                home: BlocInjector<CounterBloc>(
-                  bloc: bloc,
+                home: BlocInjector<CounterBloc>.instance(
+                  instance: bloc,
                   child: Scaffold(
                     body: Center(
                       child: Column(
@@ -82,8 +82,8 @@ void main() {
           StatefulBuilder(
             builder: (BuildContext context, setState) {
               return MaterialApp(
-                home: BlocInjector<CounterBloc>(
-                  bloc: bloc,
+                home: BlocInjector<CounterBloc>.instance(
+                  instance: bloc,
                   child: Scaffold(
                     body: Center(
                       child: Column(

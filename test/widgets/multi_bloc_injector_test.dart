@@ -22,10 +22,10 @@ void main() {
           home: MultiBlocInjector(
             injectors: [
               BlocInjector<CounterBloc>(
-                bloc: counterBloc,
+                create: (context) => counterBloc,
               ),
               BlocInjector<WeatherBloc>(
-                bloc: weatherBloc,
+                create: (context) => weatherBloc,
               ),
             ],
             child: Scaffold(

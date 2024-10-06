@@ -11,6 +11,9 @@ typedef EventHandlerCallback<E, S> = FutureOr<void> Function(
   Emitter<S> emit,
 );
 
+/// A function that creates a [Bloc] when called with a [BuildContext].
+typedef BlocCreator<B extends Bloc> = B Function(BuildContext);
+
 /// A function that observes to state changes of type [S].
 typedef BlocObserverHandler<S> = void Function(BuildContext context, S state);
 

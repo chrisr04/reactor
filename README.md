@@ -18,7 +18,7 @@ dependencies:
   reactor:
     git:
       url: https://github.com/chrisr04/reactor
-      ref: v0.0.4
+      ref: v0.0.5
  ```
 
 ## Usage
@@ -117,16 +117,10 @@ class MyCounterWidget extends ReactorWidget<CounterBloc, CounterState> {
   MyCounterWidget({super.key});
 
   @override
-  CounterBloc? blocDependency(BuildContext context) {
+  CounterBloc initBloc(BuildContext context) {
     // Add your Bloc instance
     return CounterBloc(initialValue);
   } 
-
-  @override
-  void init(CounterBloc bloc) {
-    // Add your initial events
-    bloc.add(IncrementEvent());
-  }
 
   @override
   Widget build(BuildContext context, MyState state) {
@@ -153,7 +147,7 @@ class MyCounterWidget extends ReactorWidget<CounterBloc, CounterState> {
 }
 ```
 
-**Note:** It's not necessary override the `blocDependency` every time, we recommend adding it to the highest widget in our view if we want to consume the Bloc in other widgets.
+**Note:** It's not necessary override the `initBloc` every time, we recommend adding it to the highest widget in our view if we want to consume the Bloc in other widgets.
 
 **Advanced usage**
 
@@ -162,7 +156,7 @@ class MyCounterWidget extends ReactorWidget<CounterBloc, CounterState> {
   MyCounterWidget({super.key});
 
   @override
-  CounterBloc? blocDependency(BuildContext context) {
+  CounterBloc initBloc(BuildContext context) {
     return CounterBloc(initialValue);
   } 
 
@@ -218,7 +212,7 @@ Provides a convenient way to inject and manage `Bloc` instances in the widget tr
 
 ```dart
 BlocInjector<MyBloc>(
-  bloc: MyBloc(),
+  create: (context) => MyBloc(),
   child: MyChildWidget(),
 );
 ```
@@ -237,16 +231,13 @@ context.get<MyBloc>();
 
 **Advanced usage**
 
-If you don't need an automatic Bloc disposing when the widget is disposed set `closeOnDispose` to `false`.
+If you don't need an automatic Bloc disposing when the widget is disposed use `BlocInjector<MyBloc>.instance`.
 
 ```dart
-BlocInjector<MyBloc>(
-  bloc: MyBloc(),
-  closeOnDispose: false,
+BlocInjector<MyBloc>.instance(
+  instance: myBloc,
   child: MyChildWidget(),
 );
-
-await BlocInjector.of<MyBloc>(context).close();
 ```
 **Note:** Don't forget to call `close()` when the Bloc is no longer needed.
 

@@ -35,8 +35,6 @@ abstract class ReactorWidget<B extends Bloc, S> extends StatefulWidget {
   /// removed from the widget tree. By default, this is set to true.
   ///
   /// Override this method to prevent closing the Bloc on dispose.
-  ///
-  /// Note: If `blocDependency` is not overriden this method is ignored.
   bool get closeOnDispose => true;
 
   /// Whether this widget should only observe the Bloc's state without
@@ -47,18 +45,20 @@ abstract class ReactorWidget<B extends Bloc, S> extends StatefulWidget {
   /// affecting the widget's visual representation. Defaults to false.
   bool get observeOnly => false;
 
+  /// Finds the Bloc in the widget tree.
+  ///
+  /// This method uses `BuildContext` to locate the Bloc instance.
+  /// It is marked as `@nonVirtual` to prevent overriding, ensuring
+  /// consistent behavior across all subclasses.
+  @nonVirtual
+  @protected
+  B getBloc(BuildContext context) => context.get<B>();
+
   /// Provides the Bloc instance that this widget depends on.
   ///
   /// Override this method to supply a specific Bloc from the widget's context.
-  /// By default, this returns null, meaning that `getBloc` will be used to
-  /// locate the Bloc instance.
-  B? blocDependency(BuildContext context) => null;
-
-  /// Called when the Bloc is initialized.
-  ///
-  /// Override this method to perform any additional setup when the`Bloc
-  /// becomes available. The `bloc` parameter refers to the instance of the Bloc.
-  void init(B bloc) {}
+  /// By default, this will be use `getBloc` to locate the Bloc instance.
+  B initBloc(BuildContext context) => getBloc(context);
 
   /// Describes the part of the UI that depends on the [Bloc]'s state.
   ///
@@ -86,25 +86,9 @@ abstract class ReactorWidget<B extends Bloc, S> extends StatefulWidget {
   /// This method works similarly to `buildWhen`, but controls whether
   /// `observer` should react to state transitions. By default, it returns true.
   bool observeWhen(S previous, S current) => true;
-
-  /// Finds the Bloc in the widget tree.
-  ///
-  /// This method uses `BuildContext` to locate the Bloc instance.
-  /// It is marked as `@nonVirtual` to prevent overriding, ensuring
-  /// consistent behavior across all subclasses.
-  @nonVirtual
-  @protected
-  B getBloc(BuildContext context) => context.get<B>();
 }
 
 class ReactorWidgetState<B extends Bloc, S> extends State<ReactorWidget<B, S>> {
-  late final bloc = widget.blocDependency(context);
-
-  @override
-  void initState() {
-    super.initState();
-    Future.microtask(_onInit);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -113,20 +97,21 @@ class ReactorWidgetState<B extends Bloc, S> extends State<ReactorWidget<B, S>> {
       observer: widget.observer,
       buildWhen: widget.buildWhen,
       observeOnly: widget.observeOnly,
-      builder: (context, state) => widget.build(context, state),
+      builder: widget.build,
     );
 
-    if (bloc == null) return blocReactor;
+    if (context.exist<B>()) return blocReactor;
 
-    return BlocInjector<B>(
-      bloc: bloc!,
-      closeOnDispose: widget.closeOnDispose,
+    if (widget.closeOnDispose) {
+      return BlocInjector<B>(
+        create: widget.initBloc,
+        child: blocReactor,
+      );
+    }
+
+    return BlocInjector<B>.instance(
+      instance: widget.initBloc(context),
       child: blocReactor,
     );
-  }
-
-  void _onInit() {
-    if (!context.mounted) return;
-    widget.init(bloc ?? context.get<B>());
   }
 }

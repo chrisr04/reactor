@@ -51,7 +51,7 @@ class CounterText extends ReactorWidget<CounterBloc, CounterState> {
   bool get observeOnly => mockedObserveOnly;
 
   @override
-  CounterBloc? blocDependency(BuildContext context) {
+  CounterBloc initBloc(BuildContext context) {
     return mockedBloc;
   }
 
@@ -265,7 +265,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: BlocInjector<CounterBloc>(
-              bloc: counterBloc,
+              create: (context) => counterBloc,
               child: const CounterTextWithoutInjection(),
             ),
           ),
@@ -291,7 +291,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: BlocInjector<CounterBloc>(
-              bloc: counterBloc,
+              create: (context) => counterBloc,
               child: const CounterTextWithoutInjection(),
             ),
           ),
