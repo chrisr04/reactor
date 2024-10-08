@@ -15,18 +15,39 @@ class CounterText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var bloc = BlocInjector.of<CounterBloc>(context, listen: true);
+    var bloc = BlocInjector.of<CounterBloc>(context, observe: true);
     if (useExtension) {
-      bloc = context.get<CounterBloc>(listen: true);
+      bloc = context.observe<CounterBloc>();
     }
     return Text('Counter text: ${bloc.state.counter}');
+  }
+}
+
+class CounterTextWithObserve extends StatelessWidget {
+  const CounterTextWithObserve({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final bloc = context.observe<CounterBloc>();
+
+    return Column(
+      children: [
+        Text('Counter text: ${bloc.state.counter}'),
+        MaterialButton(
+          child: const Text('Increment'),
+          onPressed: () {
+            context.get<CounterBloc>().add(const IncrementEvent());
+          },
+        )
+      ],
+    );
   }
 }
 
 void main() {
   group('BlocInjector', () {
     testWidgets(
-      'update constant widget when bloc instant is changed and listen is true',
+      'update constant widget when bloc instant is changed and observe is true',
       (tester) async {
         CounterBloc bloc = CounterBloc();
 
@@ -74,7 +95,7 @@ void main() {
     );
 
     testWidgets(
-      'update constant widget when bloc instant is changed and listen is true using get() extension',
+      'update constant widget when bloc instance is changed using observe() extension',
       (tester) async {
         CounterBloc bloc = CounterBloc();
 
@@ -112,6 +133,38 @@ void main() {
         await tester.pumpAndSettle();
 
         final buttonFinder = find.text('change instance');
+
+        await tester.tap(buttonFinder);
+
+        await tester.pump();
+
+        final textFinder = find.text('Counter text: 1');
+
+        expect(textFinder, findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'update constant widget when bloc state is changed using observe() extension',
+      (tester) async {
+        CounterBloc bloc = CounterBloc();
+
+        await tester.pumpWidget(
+          StatefulBuilder(
+            builder: (BuildContext context, setState) {
+              return MaterialApp(
+                home: BlocInjector<CounterBloc>.instance(
+                  instance: bloc,
+                  child: const CounterTextWithObserve(),
+                ),
+              );
+            },
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        final buttonFinder = find.text('Increment');
 
         await tester.tap(buttonFinder);
 

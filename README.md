@@ -229,6 +229,18 @@ or
 context.get<MyBloc>();
 ```
 
+If you also need to rebuild your widget when the state changes, the above methods are not suitable, instead you can use:
+
+```dart
+BlocInjector.of<MyBloc>(context, observe: true);
+```
+
+or
+
+```dart
+context.observe<MyBloc>();
+```
+
 **Advanced usage**
 
 If you don't need an automatic Bloc disposing when the widget is disposed use `BlocInjector<MyBloc>.instance`.

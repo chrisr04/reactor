@@ -12,24 +12,17 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: CounterPage(
-        initialValue: 0,
-      ),
+      home: CounterPage(),
     );
   }
 }
 
 class CounterPage extends ReactorWidget<CounterBloc, CounterState> {
-  const CounterPage({
-    super.key,
-    required this.initialValue,
-  });
-
-  final int initialValue;
+  const CounterPage({super.key});
 
   @override
   CounterBloc initBloc(BuildContext context) {
-    return CounterBloc(initialValue);
+    return CounterBloc();
   }
 
   @override

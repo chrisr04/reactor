@@ -5,20 +5,29 @@ import 'package:reactor/widgets/widgets.dart';
 /// Provides extension methods for `BuildContext` to easily access and check for `Bloc` instances
 /// using `BlocInjector`.
 extension BlocContextExtension on BuildContext {
-
   /// Retrieves a `Bloc` instance of type `B` from the nearest `BlocInjector` in the widget tree.
-  ///
-  /// - The `listen` parameter determines whether the context will listen to changes in the `Bloc` instance.
-  ///   If set to `true`, the context will rebuild when the `Bloc` instance changes. Defaults to `false`.
   ///
   /// Throws an exception if the `Bloc` instance is not found.
   ///
   /// Example:
   /// ```dart
-  /// final myBloc = context.get<MyBloc>(listen: true);
+  /// final myBloc = context.get<MyBloc>();
   /// ```
-  B get<B extends Bloc>({bool listen = false}) {
-    return BlocInjector.of<B>(this, listen: listen);
+  B get<B extends Bloc>() {
+    return BlocInjector.of<B>(this, observe: false);
+  }
+
+  /// Retrieves a `Bloc` instance of type `B` from the nearest `BlocInjector` in the widget tree
+  /// and rebuild widget when state is changed.
+  ///
+  /// Throws an exception if the `Bloc` instance is not found.
+  ///
+  /// Example:
+  /// ```dart
+  /// final myBloc = context.observe<MyBloc>();
+  /// ```
+  B observe<B extends Bloc>() {
+    return BlocInjector.of<B>(this, observe: true);
   }
 
   /// Checks whether a `Bloc` of type `B` exists within the current context.

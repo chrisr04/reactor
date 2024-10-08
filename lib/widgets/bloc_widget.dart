@@ -60,7 +60,11 @@ abstract class BlocWidget<B extends Bloc, S> extends SingleChildStatefulWidget {
 
 class _BlocWidgetState<B extends Bloc, S>
     extends SingleChildState<BlocWidget<B, S>> {
-  late B _bloc = BlocInjector.of<B>(context, listen: true);
+  late B _bloc = BlocInjector.of<B>(
+    context,
+    observe: true,
+    aspect: BlocAspect.widget,
+  );
   late S _state = _bloc.state;
   StreamSubscription? _blocSubscription;
 
