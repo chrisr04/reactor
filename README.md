@@ -220,25 +220,21 @@ BlocInjector<MyBloc>(
 To get injected instance you can use:
 
 ```dart
-BlocInjector.of<MyBloc>(context);
-```
+// with BlocInjector
+final myBloc = BlocInjector.of<MyBloc>(context);
 
-or
-
-```dart
-context.get<MyBloc>();
+// with context extension
+final myBloc = context.get<MyBloc>();
 ```
 
 If you also need to rebuild your widget when the state changes, the above methods are not suitable, instead you can use:
 
 ```dart
-BlocInjector.of<MyBloc>(context, observe: true);
-```
+// with BlocInjector
+final myBloc = BlocInjector.of<MyBloc>(context, observe: true);
 
-or
-
-```dart
-context.observe<MyBloc>();
+// with context extension
+final myBloc = context.observe<MyBloc>();
 ```
 
 **Advanced usage**

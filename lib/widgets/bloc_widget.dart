@@ -66,21 +66,16 @@ class _BlocWidgetState<B extends Bloc, S>
     aspect: BlocAspect.widget,
   );
   late S _state = _bloc.state;
-  StreamSubscription? _blocSubscription;
+  StreamSubscription? _subscription;
 
   bool get hasBuilder => widget.builder != null;
   bool get hasObserver => widget.observer != null;
   bool get mustRebuild => !widget.observeOnly && hasBuilder;
 
   @override
-  void initState() {
-    super.initState();
-    Future.microtask(_subscribe);
-  }
-
-  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    if (_subscription == null) _subscribe();
     final currentBloc = BlocInjector.of<B>(context);
     if (_bloc != currentBloc) {
       _bloc = currentBloc;
@@ -104,7 +99,7 @@ class _BlocWidgetState<B extends Bloc, S>
 
   void _subscribe() async {
     if (!context.mounted) return;
-    _blocSubscription = _bloc.stream.listen(_onListen);
+    _subscription ??= _bloc.stream.listen(_onListen);
   }
 
   void _onListen(dynamic state) {
@@ -128,7 +123,7 @@ class _BlocWidgetState<B extends Bloc, S>
   }
 
   void _unsubscribe() {
-    _blocSubscription?.cancel();
-    _blocSubscription = null;
+    _subscription?.cancel();
+    _subscription = null;
   }
 }

@@ -260,7 +260,9 @@ final class _BlocDependency<B extends Bloc> {
     if (observe && aspect != BlocAspect.widget && !_hasRequested) {
       onObserve?.call(instance!);
     }
-    if (!_hasRequested) _hasRequested = true;
+    if (!_hasRequested) {
+      _hasRequested = true;
+    } 
     return instance!;
   }
 

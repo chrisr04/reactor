@@ -124,18 +124,24 @@ void main() {
             builder: (BuildContext context, setState) {
               return MaterialApp(
                 home: BlocInjector<CounterBloc>.instance(
-                  instance: bloc..add(const IncrementEvent()),
+                  instance: bloc,
                   child: Scaffold(
                     body: Center(
                       child: Column(
                         children: [
                           const CounterText(),
                           MaterialButton(
-                            child: const Text('change instance'),
+                            child: const Text('Change instance'),
                             onPressed: () {
                               setState(() {
                                 bloc = CounterBloc(initialValue: 1);
                               });
+                            },
+                          ),
+                          MaterialButton(
+                            child: const Text('Increment'),
+                            onPressed: () {
+                              bloc.add(const IncrementEvent());
                             },
                           )
                         ],
@@ -150,9 +156,15 @@ void main() {
 
         await tester.pumpAndSettle();
 
-        final buttonFinder = find.text('change instance');
+        final buttonFinder = find.text('Change instance');
 
         await tester.tap(buttonFinder);
+
+        await tester.pumpAndSettle();
+
+        final buttonIncrementFinder = find.text('Increment');
+
+        await tester.tap(buttonIncrementFinder);
 
         await tester.pumpAndSettle();
 
