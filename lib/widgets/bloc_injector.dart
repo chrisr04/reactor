@@ -236,7 +236,7 @@ final class _BlocDependency<B extends Bloc> {
   /// This function is used to lazily instantiate a new [Bloc] if [instance] is null.
   final BlocCreator<B>? create;
 
-  /// This function is used to notify the Injector when the instance is required.
+  /// This function is used to notify the Injector when the instance is observed.
   final ValueChanged<B>? onObserve;
 
   /// An existing [Bloc] instance.
