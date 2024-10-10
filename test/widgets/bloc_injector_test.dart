@@ -15,17 +15,18 @@ class CounterText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var bloc = BlocInjector.of<CounterBloc>(context, observe: true);
-    if (useExtension) {
-      bloc = context.observe<CounterBloc>();
-    }
+    final bloc = switch (useExtension) {
+      true => context.observe<CounterBloc>(),
+      _ => BlocInjector.of<CounterBloc>(context, observe: true),
+    };
+   
     return Text('Counter text: ${bloc.state.counter}');
   }
 }
 
 class CounterTextWithObserve extends StatelessWidget {
   const CounterTextWithObserve({super.key});
-
+  
   @override
   Widget build(BuildContext context) {
     final bloc = context.observe<CounterBloc>();

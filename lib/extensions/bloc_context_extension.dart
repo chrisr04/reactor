@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:reactor/bloc/bloc.dart';
+import 'package:reactor/utils/bloc_aspect.dart';
 import 'package:reactor/widgets/widgets.dart';
 
 /// Provides extension methods for `BuildContext` to easily access and check for `Bloc` instances
@@ -27,7 +28,11 @@ extension BlocContextExtension on BuildContext {
   /// final myBloc = context.observe<MyBloc>();
   /// ```
   B observe<B extends Bloc>() {
-    return BlocInjector.of<B>(this, observe: true);
+    return BlocInjector.of<B>(
+      this,
+      observe: true,
+      aspect: BlocAspect.contextExtension,
+    );
   }
 
   /// Checks whether a `Bloc` of type `B` exists within the current context.

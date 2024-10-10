@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:reactor/bloc/bloc.dart';
 import 'package:reactor/nested/nested.dart';
 import 'package:reactor/types/types.dart';
+import 'package:reactor/utils/utils.dart';
 import 'package:reactor/widgets/bloc_injector.dart';
 
 /// A base widget class for integrating a `Bloc` into the Flutter widget tree.

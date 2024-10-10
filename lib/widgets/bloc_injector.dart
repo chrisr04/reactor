@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:reactor/bloc/bloc.dart';
 import 'package:reactor/nested/nested.dart';
 import 'package:reactor/types/types.dart';
+import 'package:reactor/utils/utils.dart';
 
 /// Creates a `BlocInjector` widget.
 ///
@@ -87,7 +88,7 @@ class BlocInjector<B extends Bloc> extends SingleChildStatefulWidget {
 
 class _BlocInjectorState<B extends Bloc>
     extends SingleChildState<BlocInjector> {
-  late _BlocDependency<B> _bloc;
+  late BlocDependency<B> _bloc;
   StreamSubscription? _subscription;
 
   @override
@@ -102,7 +103,7 @@ class _BlocInjectorState<B extends Bloc>
     final newBloc = _createDependency();
     if (_bloc != newBloc) {
       _unsubscribe();
-      _bloc.getInstance(context).close();
+      _bloc.getOrCreateInstance(context).close();
       _bloc = newBloc;
     }
   }
@@ -119,13 +120,13 @@ class _BlocInjectorState<B extends Bloc>
   void dispose() {
     _unsubscribe();
     if (widget.create != null) {
-      _bloc.getInstance(context).close();
+      _bloc.getOrCreateInstance(context).close();
     }
     super.dispose();
   }
 
-  _BlocDependency<B> _createDependency() {
-    return _BlocDependency<B>(
+  BlocDependency<B> _createDependency() {
+    return BlocDependency<B>(
       instance: widget.instance as B?,
       create: widget.create as BlocCreator<B>?,
       onObserve: _onObserve,
@@ -141,9 +142,6 @@ class _BlocInjectorState<B extends Bloc>
     _subscription = null;
   }
 }
-
-/// This enum allow identify when a widget should be rebuilt.
-enum BlocAspect { widget, contextExtension }
 
 /// Creates an [_InheritedBloc] widget.
 ///
@@ -161,7 +159,7 @@ class _InheritedBloc<B extends Bloc> extends InheritedModel<BlocAspect> {
   });
 
   /// The [Bloc] provided to the widget tree.
-  final _BlocDependency<B> bloc;
+  final BlocDependency<B> bloc;
 
   /// Retrieves the [Bloc] from the nearest ancestor [_InheritedBloc] widget.
   ///
@@ -190,7 +188,7 @@ class _InheritedBloc<B extends Bloc> extends InheritedModel<BlocAspect> {
       );
     }
 
-    return bloc.getInstance(
+    return bloc.getOrCreateInstance(
       context,
       observe: observe,
       aspect: aspect,
@@ -208,73 +206,7 @@ class _InheritedBloc<B extends Bloc> extends InheritedModel<BlocAspect> {
     _InheritedBloc<B> oldWidget,
     Set<BlocAspect> dependencies,
   ) {
-    return dependencies.contains(BlocAspect.widget)
-        ? oldWidget.bloc != bloc
-        : false;
+    if (dependencies.contains(BlocAspect.widget)) return oldWidget.bloc != bloc;
+    return dependencies.contains(BlocAspect.contextExtension);
   }
-}
-
-/// The `_BlocDependency` class is designed to facilitate dependency management
-/// by either providing an existing instance of a [Bloc] or creating a new one
-/// when needed. It ensures that either [create] or [instance] is available,
-/// asserting that at least one of them is not null.
-final class _BlocDependency<B extends Bloc> {
-  /// Creates a [_BlocDependency] instance.
-  ///
-  /// The [create] function is optional and should be provided when a new
-  /// [Bloc] instance needs to be created. The [instance] can be passed
-  /// directly if an existing [Bloc] is available.
-  ///
-  /// At least one of [create] or [instance] must be non-null, otherwise
-  /// an assertion error will be thrown.
-  _BlocDependency({
-    this.create,
-    this.instance,
-    this.onObserve,
-  }) : assert(create != null || instance != null);
-
-  /// This function is used to lazily instantiate a new [Bloc] if [instance] is null.
-  final BlocCreator<B>? create;
-
-  /// This function is used to notify the Injector when the instance is observed.
-  final ValueChanged<B>? onObserve;
-
-  /// An existing [Bloc] instance.
-  ///
-  /// If provided, this instance will be reused instead of creating a new one.
-  B? instance;
-
-  /// This bool will be `true` when the instance is requested the first time.
-  bool _hasRequested = false;
-
-  /// Returns the [Bloc] instance, creating it if necessary.
-  ///
-  /// If [instance] is null, this method will call [create] to generate
-  /// a new [Bloc] instance and cache it for future use.
-  B getInstance(
-    BuildContext context, {
-    bool observe = false,
-    BlocAspect? aspect,
-  }) {
-    instance ??= create?.call(context);
-    if (observe && aspect != BlocAspect.widget && !_hasRequested) {
-      onObserve?.call(instance!);
-    }
-    if (!_hasRequested) {
-      _hasRequested = true;
-    } 
-    return instance!;
-  }
-
-  @override
-  bool operator ==(Object other) =>
-      other is _BlocDependency<B> &&
-      other.runtimeType == runtimeType &&
-      ((other.create != null && create != null) ||
-          (other.instance != null &&
-              instance != null &&
-              other.instance == instance));
-
-  @override // coverage:ignore-line
-  int get hashCode => Object.hash(create, instance); // coverage:ignore-line
 }
